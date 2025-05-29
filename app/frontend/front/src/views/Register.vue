@@ -46,7 +46,7 @@ const register = async () => {
                 <input type="name" v-model="name" placeholder="Имя" required  class = "name-input"/>
                 <input type="adress" v-model="adress" placeholder="Адрес" required  class = "adress-input"/>
                 <input type="pasport" v-model="pasport" placeholder="Паспорт" required  class = "pasport-input"/>
-                <input type="avatar" v-model="avatar" placeholder="ссылка на аватар" required class = "avatar-input">
+                <input type="avatar" v-model="avatar" placeholder="ссылка на аватар" class = "avatar-input">
             </div>    
             <button class = "sbmt-btn" type="submit">Войти</button>
             <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>

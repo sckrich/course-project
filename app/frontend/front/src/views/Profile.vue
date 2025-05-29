@@ -14,11 +14,27 @@ function logout() {
   localStorage.removeItem('user'); 
   router.push('/login'); 
 }
+const uploadAvatar = () => {
+  if (avatar_url.value) {
+    EditImage(route.params.client_id); 
+    closeModal();
+  } else {
+    alert("Пожалуйста, введите ссылку на аватар.");
+  }
+};
+
+const closeModal = () => {
+  showed.value = false;
+};
+
+const ShowEditor = () => {
+  showed.value = true; // Show the modal
+};
+
 const EditImage = async (clientId)=>{
   try{
-    await axios.post(`http://localhost:9090/api/profile/${clientId}`, {
-      field_name: "client_avatar",
-      value: avatar_url.value,
+    await axios.patch(`http://localhost:9090/api/profile/${clientId}`, {
+      client_avatar: avatar_url.value,
     })
     alert("Success")
   }
@@ -75,12 +91,18 @@ watch(() => route.params.client_id, (newClientId) => {
       <div class="profile-wrapper">
         
         <div class="left-profile-img">
+          <div v-if="showed" class="modal-overlay">
+            <div class="modal-content">
+              <h3 class = "profile-title">Введите ссылку на аватар</h3>
+              <input class = "image-unput"type="text" v-model="avatar_url" placeholder="Ссылка на аватар" />
+              <button class="sbmt-btn" @click="uploadAvatar">Загрузить</button>
+              <button class="sbmt-btn" @click="closeModal">Отмена</button>
+            </div>
+          </div>
           <img v-if="user.client_avatar" :src="user.client_avatar" alt="">
           <img v-else src="https://avatars.mds.yandex.net/i?id=9d389804f63b0b66cbbbb606e094bfd0_l-10976941-images-thumbs&n=13" alt="">
           <button v-if="isOwner" @click = "ShowEditor()" class = "load-img" type = "button">Загрузить аватар</button>
-          
 
-          <button v-if="isOwner" class = "load-img" type = "button">Редактировать профиль</button>
         </div>
         <div class="right-info-side">
           <h2 class = "profile-title">Профиль {{ user.client_username }}</h2>
@@ -140,6 +162,42 @@ watch(() => route.params.client_id, (newClientId) => {
     </div>
 </template>
 <style scoped>
+.image-unput{
+  padding: 8px;
+    border: none;
+    border-radius: 16px;
+    background-color: #303030;
+    color: white;
+    width: 250px;
+    margin-top: 8px;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin: auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .sbmt-btn{
     background-color: white;
     color: #161616;

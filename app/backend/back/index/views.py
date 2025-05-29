@@ -253,6 +253,7 @@ class MakeOrderView(viewsets.ViewSet):
 class ClientProfileView(generics.ListAPIView):
     serializer_class = ClientSerializer  
     queryset = Client.objects.all()  
+
     def get(self, request, *args, **kwargs):
         client_id = self.kwargs['client_id']
         client = Client.objects.filter(client_id=client_id).first()
@@ -263,21 +264,22 @@ class ClientProfileView(generics.ListAPIView):
             'client': client_serializer.data,
             'sales': sales_serializer.data
         })
+
     def patch(self, request, *args, **kwargs):
-        client_id = self.kwargs['client_id']
-        client = Client.objects.filter(client_id = client_id).first()
-        if client is None:
-            return Response({"error": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
-        field_to_update = request.data.get('field_name')  
-        new_value = request.data.get('value')  
+            client_id = self.kwargs['client_id']
+            client = Client.objects.filter(client_id=client_id).first()
+            if client is None:
+                return Response({"error": "Client not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if field_to_update and new_value is not None:
-            setattr(client, field_to_update, new_value) 
-            client.save() 
-            return Response(self.get_serializer(client).data, status=status.HTTP_200_OK)
-        
-        return Response({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+            new_avatar_url = request.data.get('client_avatar')
 
+            if new_avatar_url is not None:
+                client.client_avatar = new_avatar_url  
+                client.save() 
+                return Response(self.get_serializer(client).data, status=status.HTTP_200_OK)
+            
+            return Response({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+    
 class RegisterView(APIView):
     def post(self, request):
         client_username = request.data.get('username')
