@@ -1,0 +1,46 @@
+
+
+services:
+  backend:
+    build:
+      context: ./app/backend/back
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"  # Маппинг портов
+    volumes:
+      - .:/app  # Монтируем текущую директорию в контейнер
+    environment:
+      - PYTHONUNBUFFERED=1  # Убираем буферизацию вывода Python
+
+  frontend:
+    build:
+      context: ./app/frontend/front
+      dockerfile: Dockerfile
+    ports:
+      - "8020:8020"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+  db:
+       image: postgres:17
+       restart: always
+       environment:
+         POSTGRES_DB: Danik  # Имя вашей базы данных
+         POSTGRES_USER: postgres     # Имя пользователя
+         POSTGRES_PASSWORD: snopatd  # Пароль пользователя
+       ports:
+         - "5432:5432"  # Проброс порта
+       volumes:
+         - postgres_data:/var/lib/postgresql/data  # Хранение
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: root           
+    ports:
+      - "8080:80"  
+    depends_on:
+      - db  
+volumes:
+  postgres_data:
